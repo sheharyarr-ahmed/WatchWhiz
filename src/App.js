@@ -51,24 +51,32 @@ export default function App() {
   const [movies, setMovies] = useState(tempMovieData);
   return (
     <>
-      <NavBar movies={movies} />
-      <Main movies={movies} />
+      {/* implementation of the composition component as we needed the movies only in the numResults, listBox and in the movieList components and before composition components we were dping through prop drilling but now with the component composition we did this faster right in the app component also with the help of child prop functionlaity and passed the movies piece of state where it really matters */}
+      <NavBar>
+        return (
+        <Search />
+        <Numresults movies={movies} />
+        );
+      </NavBar>
+      <Main>
+        <ListBox movies={movies}>
+          <MovieList movies={movies} />
+        </ListBox>
+        <WatchedBox />
+      </Main>
     </>
   );
+}
+//here you can see we did the components composition as the nav bar component has the children component and is also mentioned as an component compostion in the App component
+function NavBar({ children }) {
+  <nav className="nav-bar">
+    <Logo />
+    {children}
+  </nav>;
 }
 
 const average = (arr) =>
   arr.reduce((acc, cur, i, arr) => acc + cur / arr.length, 0);
-
-function NavBar({ movies }) {
-  return (
-    <nav className="nav-bar">
-      <Logo />
-      <Search />
-      <Numresults movies={movies} />
-    </nav>
-  );
-}
 
 function Numresults({ movies }) {
   return (
@@ -100,16 +108,11 @@ function Search() {
   );
 }
 
-function Main({ movies }) {
-  return (
-    <main className="main">
-      <ListBox movies={movies} />
-      <WatchedBox />
-    </main>
-  );
+function Main({ children }) {
+  return <main className="main">{children}</main>;
 }
 
-function ListBox({ movies }) {
+function ListBox({ children }) {
   const [isOpen1, setIsOpen1] = useState(true);
   return (
     <div className="box">
@@ -119,7 +122,7 @@ function ListBox({ movies }) {
       >
         {isOpen1 ? "–" : "+"}
       </button>
-      {isOpen1 && <MovieList movies={movies} />}
+      {isOpen1 && children}
     </div>
   );
 }
