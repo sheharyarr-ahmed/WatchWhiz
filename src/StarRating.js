@@ -1,5 +1,6 @@
 // This StarRating component demonstrates the power of component reusability through props in React. Instead of hardcoding values, the component accepts flexible props like maxRating, color, size, messages, defaultRating, and even a callback onSetRating. This allows the same component to be reused in many different scenarios—whether you want a small 3-star rating for quick feedback, a 10-star detailed rating with custom labels like “Terrible” to “Amazing”, or a rating system that updates data in a parent component. By separating the rendering of each Star into its own component and controlling the behavior with props and state, the design stays modular, customizable, and easy to extend, showing how React’s props make UI building blocks truly reusable.
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const containerStyle = {
   display: "flex",
@@ -10,7 +11,16 @@ const containerStyle = {
 const starContainerStyle = {
   display: "flex",
 };
-
+// implementation of the prop types
+// StarRating.propTypes = {
+//   maxRating: PropTypes.number,
+//   defaultRating: PropTypes.number,
+//   color: PropTypes.string,
+//   size: PropTypes.number,
+//   messages: PropTypes.array,
+//   className: PropTypes.string,
+//   OnSetRating: PropTypes.func,
+// };
 // setting the default value for maxRating
 export default function StarRating({
   maxRating = 5,
@@ -30,7 +40,9 @@ export default function StarRating({
   };
   function handleRating(rating) {
     setRating(rating);
-    onSetRating(rating);
+    if (onSetRating) {
+      onSetRating(rating);
+    }
   }
   return (
     <div style={containerStyle}>
