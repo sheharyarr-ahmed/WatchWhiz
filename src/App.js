@@ -55,18 +55,29 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState("");
   const query = "interstellar";
   useEffect(function () {
     async function fetchMovies() {
-      setIsLoading(true); //setting the loader message before fetching the data
-      const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
-      );
-      const data = await res.json();
-      setMovies(data.Search);
-      setIsLoading(false); //set the loader to false after the movie data is fetched set the loading text to false
-      // console.log(movies); this represent stale data as it will give output as an empty array, it will not immediately render the movies state instead the upper function of SetMovies needs tobe executed first
-      // console.log(data.Search);
+      try {
+        setIsLoading(true); //setting the loader message before fetching the data
+        const res = await fetch(
+          `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+        );
+
+        if (!res.ok) throw new Error("SOMETHING WRONG WITH FETCHING MOVIES ");
+        const data = await res.json();
+        if (data.Response === "False") throw new Error("MOVIE NOT FOUND");
+        setMovies(data.Search);
+        // setIsLoading(false); //set the loader to false after the movie data is fetched set the loading text to false
+        // console.log(movies); this represent stale data as it will give output as an empty array, it will not immediately render the movies state instead the upper function of SetMovies needs tobe executed first
+        // console.log(data.Search);
+      } catch (err) {
+        console.error(err.message);
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
+      }
     }
     fetchMovies();
   }, []); // the empty array at the end is called as dependecny array
@@ -92,7 +103,12 @@ export default function App() {
       </NavBar>
       <Main>
         <Box movies={movies}>
-          {isLoading ? <Loader /> : <MovieList movies={movies} />}
+          {/* {isLoading ? <Loader /> : <MovieList movies={movies} />} */}
+
+          {/* adding the mutually exclsusive conditions */}
+          {isLoading && <Loader />}
+          {isLoading && !error && <MovieList movies={movies} />}
+          {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
           <WatchedSummary watched={watched} />
@@ -122,6 +138,15 @@ export default function App() {
 
 function Loader() {
   return <p className="loader">LOADING...</p>;
+}
+
+function ErrorMessage({ message }) {
+  return (
+    <p className="error">
+      <span>🛑</span>
+      {message}
+    </p>
+  );
 }
 
 function NavBar({ children }) {
