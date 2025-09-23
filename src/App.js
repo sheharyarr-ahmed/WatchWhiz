@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./index.css";
 
 const tempMovieData = [
@@ -47,16 +47,22 @@ const tempWatchedData = [
     userRating: 9,
   },
 ];
+//Putting fetch inside the component body causes an infinite loop because each state update triggers a re-render, which triggers the fetch again. this is not the right way to fetch data in react
 
+// IMPLEMENTATION OF THE USE EFFECT HOOK
 const KEY = "74bebcda";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
-  fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
-    .then((res) => res.json())
-    //Putting fetch inside the component body causes an infinite loop because each state update triggers a re-render, which triggers the fetch again. this is not the right way to fetch data in react
-    // .then((data) => setMovies(data.Search));
-    .then((data) => console.log(data.Search));
+  useEffect(function () {
+    fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
+      .then((res) => res.json())
+      .then((data) => setMovies(data.Search));
+  }, []);
+  // fetch(`http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`)
+  //   .then((res) => res.json())
+  //   // .then((data) => setMovies(data.Search));
+  //   .then((data) => console.log(data.Search));
   return (
     <>
       {/* implementation of the composition component as we needed the movies only in the numResults, listBox and in the movieList components and before composition components we were dping through prop drilling but now with the component composition we did this faster right in the app component also with the help of child prop functionlaity and passed the movies piece of state where it really matters */}
