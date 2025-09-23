@@ -107,7 +107,7 @@ export default function App() {
 
           {/* adding the mutually exclsusive conditions */}
           {isLoading && <Loader />}
-          {isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && <MovieList movies={movies} />}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
