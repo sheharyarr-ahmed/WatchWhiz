@@ -54,15 +54,19 @@ const KEY = "74bebcda";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const query = "interstellar";
   useEffect(function () {
     async function fetchMovies() {
+      setIsLoading(true); //setting the loader message before fetching the data
       const res = await fetch(
-        `http://www.omdbapi.com/?apikey=${KEY}&s=interstellar`
+        `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
       );
       const data = await res.json();
       setMovies(data.Search);
+      setIsLoading(false); //set the loader to false after the movie data is fetched set the loading text to false
       // console.log(movies); this represent stale data as it will give output as an empty array, it will not immediately render the movies state instead the upper function of SetMovies needs tobe executed first
-      console.log(data.Search);
+      // console.log(data.Search);
     }
     fetchMovies();
   }, []); // the empty array at the end is called as dependecny array
@@ -88,7 +92,7 @@ export default function App() {
       </NavBar>
       <Main>
         <Box movies={movies}>
-          <MovieList movies={movies} />
+          {isLoading ? <Loader /> : <MovieList movies={movies} />}
         </Box>
         <Box>
           <WatchedSummary watched={watched} />
@@ -115,6 +119,11 @@ export default function App() {
   );
 }
 //here you can see we did the components composition as the nav bar component has the children component and is also mentioned as an component compostion in the App component
+
+function Loader() {
+  return <p className="loader">LOADING...</p>;
+}
+
 function NavBar({ children }) {
   <nav className="nav-bar">
     <Logo />
