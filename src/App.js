@@ -52,12 +52,12 @@ const tempWatchedData = [
 // IMPLEMENTATION OF THE USE EFFECT HOOK
 const KEY = "74bebcda";
 export default function App() {
-  const [query, setQuery] = useState("");
+  const [query, setQuery] = useState("inception");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
-  const tempQuery = "interstellar";
+  const [selectedId, setSelectedId] = useState(null);
 
   // useEffect(function () {
   //   console.log("after initial render or mount");
@@ -72,6 +72,13 @@ export default function App() {
   //   [query]
   // );
   // console.log("hello");
+
+  function handleSelectMovie(id) {
+    setSelectedId((selectedId) => (id === selectedId ? null : id));
+  }
+  function handleCloseMovie(id) {
+    setSelectedId(null);
+  }
   useEffect(
     function () {
       async function fetchMovies() {
@@ -86,6 +93,7 @@ export default function App() {
           const data = await res.json();
           if (data.Response === "False") throw new Error("MOVIE NOT FOUND");
           setMovies(data.Search);
+          // console.log(data.Search);
           // setIsLoading(false); //set the loader to false after the movie data is fetched set the loading text to false
           // console.log(movies); this represent stale data as it will give output as an empty array, it will not immediately render the movies state instead the upper function of SetMovies needs tobe executed first
           // console.log(data.Search);
@@ -128,12 +136,23 @@ export default function App() {
 
           {/* adding the mutually exclsusive conditions */}
           {isLoading && <Loader />}
-          {!isLoading && !error && <MovieList movies={movies} />}
+          {!isLoading && !error && (
+            <MovieList movies={movies} onSelectMovie={handleSelectMovie} />
+          )}
           {error && <ErrorMessage message={error} />}
         </Box>
         <Box>
-          <WatchedSummary watched={watched} />
-          <WatchedMovieList watched={watched} />
+          {selectedId ? (
+            <MovieDetails
+              selectedId={selectedId}
+              onCloseMovie={handleCloseMovie}
+            />
+          ) : (
+            <>
+              <WatchedSummary watched={watched} />
+              <WatchedMovieList watched={watched} />
+            </>
+          )}
         </Box>
 
         {/* passing element as an prop with the element property */}
@@ -261,19 +280,24 @@ function Box({ children }) {
 //   );
 // }
 
-function MovieList({ movies }) {
+function MovieList({ movies, onSelectMovie }) {
   return (
-    <ul className="list">
+    <ul className="list list-movies">
       {movies?.map((movie) => (
-        <Movie movie={movie} key={movie.imdbID} movies={movies} />
+        <Movie
+          movie={movie}
+          key={movie.imdbID}
+          movies={movies}
+          onSelectMovie={onSelectMovie}
+        />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, onSelectMovie }) {
   return (
-    <li>
+    <li onClick={() => onSelectMovie(movie.imdbID)}>
       <img src={movie.Poster} alt={`${movie.Title} poster`} />
       <h3>{movie.Title}</h3>
       <div>
@@ -285,7 +309,16 @@ function Movie({ movie }) {
     </li>
   );
 }
-
+function MovieDetails({ selectedId, onCloseMovie }) {
+  return (
+    <div className="details">
+      <button className="btn-back" onClick={onCloseMovie}>
+        &larr;
+      </button>
+      {selectedId}
+    </div>
+  );
+}
 function WatchedSummary({ watched }) {
   const avgImdbRating = average(watched.map((movie) => movie.imdbRating));
   const avgUserRating = average(watched.map((movie) => movie.userRating));
