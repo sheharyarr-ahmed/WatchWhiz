@@ -368,6 +368,20 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     onAddWatched(newWatchedMovie);
     onCloseMovie();
   }
+
+  useEffect(function () {
+    function callBack(e) {
+      if (e.code === "Escape") {
+        onCloseMovie();
+        console.log("the movie window is now closing");
+      }
+    }
+    document.addEventListener("keydown", callBack);
+
+    return function () {
+      document.removeEventListener("keydown", callBack);
+    };
+  }, []);
   useEffect(
     function () {
       async function getMovieDetails() {
