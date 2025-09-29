@@ -53,7 +53,7 @@ const tempWatchedData = [
 // IMPLEMENTATION OF THE USE EFFECT HOOK
 const KEY = "74bebcda";
 export default function App() {
-  const [query, setQuery] = useState("inception");
+  const [query, setQuery] = useState("");
   const [movies, setMovies] = useState([]);
   const [watched, setWatched] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -125,6 +125,7 @@ export default function App() {
           setError("");
         }
       }
+      handleCloseMovie();
       fetchMovies();
       return function () {
         controller.abort();
@@ -237,8 +238,8 @@ function Numresults({ movies }) {
 function Logo() {
   return (
     <div className="logo">
-      <span role="img">🍿</span>
-      <h1>usePopcorn</h1>
+      <span role="img">🎬</span>
+      <h1>WatchWhiz</h1>
     </div>
   );
 }
