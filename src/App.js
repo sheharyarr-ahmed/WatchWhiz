@@ -378,6 +378,14 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     function () {
       if (!title) return;
       document.title = `Movie | ${title}`;
+
+      // this return function within the usEffect hook represents the clean up fucntionas it always returns frome the useEffect function
+      return function () {
+        document.title = "WatchWhiz";
+        console.log(
+          `use Effect clean up fucntion is on the action. and the movie title is  ${title}`
+        );
+      };
     },
     [title]
   );
