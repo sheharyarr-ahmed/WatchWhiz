@@ -312,7 +312,22 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
 
   // if (imdbRating > 8) return <p>Greatest ever</p>; this will mess with the order of react hooks therefore this line was jsut added to be clear about one of the rule of react hooks
 
+  // const [isTop, setIsTop] = useState(imdbRating > 8);
+  // console.log(isTop);
+  // useEffect(
+  //   function () {
+  //     setIsTop(imdbRating > 8);
+  //   },
+  //   [imdbRating]
+  // );
+
+  // making an dervied state variable
+  const isTop = imdbRating > 8;
+  console.log(isTop);
+
   console.log(title, year);
+
+  // const [avgRating, setAvgRating] = useState(0);
   function handleAdd() {
     const newWatchedMovie = {
       imdbID: selectedId,
@@ -325,6 +340,8 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     };
     onAddWatched(newWatchedMovie);
     onCloseMovie();
+    // setAvgRating(Number(imdbRating));
+    // setAvgRating((avgRating) => (userRating + avgRating) / 2);
   }
 
   useEffect(function () {
@@ -393,6 +410,7 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
               </p>
             </div>
           </header>
+          {/* <p>{avgRating}</p> */}
           <section>
             <div className="rating">
               {!isWatched ? (
