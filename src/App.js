@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import "./index.css";
 import StarRating from "./StarRating";
 
@@ -18,6 +18,7 @@ export default function App() {
     const storedValue = localStorage.getItem("watched");
     return JSON.parse(storedValue);
   });
+  //this above example is called initialising state using call back function
 
   // useEffect(function () {
   //   console.log("after initial render or mount");
@@ -212,6 +213,24 @@ function Logo() {
 
 function Search({ query, setQuery }) {
   // const [query, setQuery] = useState("");
+  const inputEl = useRef(null);
+  useEffect(
+    function () {
+      //this useEffect hook is for the implememtnation of the useRef hook.
+      function callback(e) {
+        if (document.activeElement === inputEl.current) return;
+
+        if (e.code === "Enter") {
+          inputEl.current.focus();
+          setQuery("");
+        }
+      }
+
+      document.addEventListener("keydown", callback);
+      return () => document.addEventListener("keydown", callback);
+    },
+    [setQuery]
+  );
   return (
     <input
       className="search"
@@ -219,6 +238,7 @@ function Search({ query, setQuery }) {
       placeholder="Search movies..."
       value={query}
       onChange={(e) => setQuery(e.target.value)}
+      ref={inputEl}
     />
   );
 }
