@@ -3,7 +3,6 @@ import "./index.css";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
 import { useLocalStorageState } from "./useLocalStorageState";
-import { useKey } from "./useKey";
 
 //Putting fetch inside the component body causes an infinite loop because each state update triggers a re-render, which triggers the fetch again. this is not the right way to fetch data in react
 
@@ -171,13 +170,23 @@ function Logo() {
 function Search({ query, setQuery }) {
   // const [query, setQuery] = useState("");
   const inputEl = useRef(null);
-  useKey("Enter", function () {
-    if (!inputEl.current) return;
-    if (document.activeElement === inputEl.current) return;
+  useEffect(
+    function () {
+      //this useEffect hook is for the implememtnation of the useRef hook.
+      function callback(e) {
+        if (document.activeElement === inputEl.current) return;
 
-    inputEl.current.focus();
-    setQuery("");
-  });
+        if (e.code === "Enter") {
+          inputEl.current.focus();
+          setQuery("");
+        }
+      }
+
+      document.addEventListener("keydown", callback);
+      return () => document.addEventListener("keydown", callback);
+    },
+    [setQuery]
+  );
   return (
     <input
       className="search"
@@ -333,21 +342,19 @@ function MovieDetails({ selectedId, onCloseMovie, onAddWatched, watched }) {
     // setAvgRating((avgRating) => (userRating + avgRating) / 2);
   }
 
-  useKey("Escape", onCloseMovie);
-  //this use Effect function is now moved to separeate custom hook
-  // useEffect(function () {
-  //   function callBack(e) {
-  //     if (e.code === "Escape") {
-  //       onCloseMovie();
-  //       console.log("the movie window is now closing");
-  //     }
-  //   }
-  //   document.addEventListener("keydown", callBack);
+  useEffect(function () {
+    function callBack(e) {
+      if (e.code === "Escape") {
+        onCloseMovie();
+        console.log("the movie window is now closing");
+      }
+    }
+    document.addEventListener("keydown", callBack);
 
-  //   return function () {
-  //     document.removeEventListener("keydown", callBack);
-  //   };
-  // }, []);
+    return function () {
+      document.removeEventListener("keydown", callBack);
+    };
+  }, []);
   useEffect(
     function () {
       async function getMovieDetails() {
