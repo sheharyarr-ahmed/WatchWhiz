@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import "./index.css";
 import StarRating from "./StarRating";
 import { useMovies } from "./useMovies";
+import { useLocalStorageState } from "./useLocalStorageState";
 
 //Putting fetch inside the component body causes an infinite loop because each state update triggers a re-render, which triggers the fetch again. this is not the right way to fetch data in react
 
@@ -15,10 +16,7 @@ export default function App() {
 
   // const [watched, setWatched] = useState([]);
   // learned about the call back initialisaton in sueState or this is called lazy initialiser
-  const [watched, setWatched] = useState(function () {
-    const storedValue = localStorage.getItem("watched");
-    return JSON.parse(storedValue);
-  });
+  const [watched, setWatched] = useLocalStorageState([], "watched");
   //this above example is called initialising state using call back function
 
   // useEffect(function () {
